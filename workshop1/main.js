@@ -19,10 +19,45 @@ const app = express()
 app.use(morgan("common"))
 
 // Games
-// TODO GET /games
+// TODO GET /games?limit=10&offset=0
+app.get("/games", async(req,resp) =>{
+	const limit = parseInt(req.query.limit) || 10
+	const offset = parseInt(req.query.offset) || 0
+	
+	//select * from games offset x limit y
+	//the result is an array of games
+	const games = await findAllGames(offset,limit)
+	const result = []
+	for (const g of games) {
+		result.push(`/game/${g.id}`)
+	}
+	// 200 ok
+	resp.status(200)
+	// Content-Type: application/json
+	resp.type('application/json')
+	// Setting own header. If it is your own, convention to use "X"
+	resp.set("X-My-Name", "testname")
+	// payload
+	resp.json(result)
+})
 
-
-// TODO GET /game/<game_id>
+// TODO GET /game/<game_id>-> this is better than using query string, as this is the actual resource
+// GET /game?gameId=<game_id>  -> alternative using query string 
+app.get('/game/:gameId', async(req, resp) =>{
+	// Extract the gameID from the resource name
+	const gameId = req.params.gameId
+	resp.type('application/json')
+	// Find the gameID from the database
+	const result = await findGameById(gameId)
+	if (!result) {
+		resp.status(404)
+		resp.json({error:`Cannot find game with gameId ${gameId}`})
+		return
+	}
+	resp.status(200)
+	resp.json(result)
+	
+})
 
 
 app.get('/games/search', async (req, resp) => {
