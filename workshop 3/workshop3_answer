@@ -1,0 +1,104 @@
+Q1
+
+query { 
+  viewer { 
+    login
+    name
+    url
+    email
+  }
+}
+
+Q2
+
+query { 
+  viewer { 
+   	login
+    repositories (first:3 orderBy:{direction: DESC, field: CREATED_AT}) {
+      edges {
+        node {
+          id
+          name
+          url
+          description
+          forkCount
+        }
+      }
+    }
+  }
+}
+
+
+Q3
+query {
+	user(login: "fred") {
+    bio
+    name
+    email
+  }
+
+Q4
+{
+  search(query: "angular", type: REPOSITORY, first: 20) {
+    edges {
+      node {
+        ... on Repository {
+          name
+          url
+          description
+        }
+      }
+    }
+  }
+}
+
+Q5
+{
+  "query": "angular",
+  "type": "DISCUSSION"
+}
+query SearchRepository($query: String!, $type: SearchType! ) {
+  search( first: 20, query: $query, type: $type) {
+    nodes {
+      ... on Repository {
+        name
+        url
+        description
+      }
+      ... on Discussion {
+        author {
+          login
+        }
+        body
+        answer {
+          id
+        }
+      }
+    }
+  }
+}
+
+Q6
+mutation {
+  createRepository(input: {name: "mutated-repo", visibility: PUBLIC}) {
+    repository {
+      id
+    }
+  }
+}
+
+
+mutation {
+  createBranchProtectionRule(
+    input: {
+      repositoryId: "<>", 
+      pattern: "main", 
+      requiresApprovingReviews: true, 
+      requiredApprovingReviewCount: 2, 
+      allowsDeletions: false
+    }
+  ) {
+    clientMutationId
+  }
+  
+}
