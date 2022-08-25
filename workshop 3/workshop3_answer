@@ -102,3 +102,6 @@ mutation {
   }
   
 }
+
+Q7
+curl -H "Authorization: bearer token" -X POST --data-binary@queryfile.graphql https://api.github.com/graphql
